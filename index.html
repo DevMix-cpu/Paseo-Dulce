@@ -10,28 +10,29 @@
         body {
             background: linear-gradient(135deg, #1a1528 0%, #0a0710 100%);
             margin: 0;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            overflow-x: hidden;
             touch-action: manipulation;
-            /* Evita que el doble tap haga zoom en celulares */
             -webkit-user-select: none;
             user-select: none;
         }
 
         #game-container {
             position: relative;
-            width: 800px;
-            height: 450px;
+            width: 100%;
+            max-width: 800px;
+            /* Tamaño máximo en PC */
+            aspect-ratio: 800 / 450;
+            /* Mantiene la proporción perfecta en cualquier celular */
             background-image: url('Images/fondo_parque.png');
             background-size: cover;
+            background-position: center;
             border-radius: 14px;
             overflow: hidden;
             font-family: monospace;
-            max-width: 100%;
-            /* Marco brillante y sombras elegantes para que luzca profesional */
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 183, 3, 0.25);
             border: 3px solid #ffb703;
         }
