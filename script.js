@@ -68,11 +68,11 @@ function animarPasoDulce() {
         frame++;
         posicionX += 8;
         if (frame <= 8) {
-            dulceImg.src = `Images/Dulce_${frame}.png`;
+            dulceImg.src = `./Images/Dulce_${frame}.png`;
             dulceImg.style.left = posicionX + "px";
         } else {
             clearInterval(intervaloDulce);
-            dulceImg.src = "Images/Dulce_1.png";
+            dulceImg.src = "./Images/Dulce_1.png";
         }
     }, 100);
 }
@@ -86,14 +86,14 @@ function animarMokaCorriendo() {
 
     let intervaloMoka = setInterval(() => {
         frame = (frame % 8) + 1;
-        mokaImg.src = `Images/Moka_${frame}.png`;
+        mokaImg.src = `./Images/Moka_${frame}.png`;
         posX -= 10;
         mokaImg.style.left = posX + "px";
 
         if (posX <= destinoX) {
             clearInterval(intervaloMoka);
             mokaImg.classList.remove("voltear");
-            mokaImg.src = "Images/Moka_4.png";
+            mokaImg.src = "./Images/Moka_4.png";
             etapaJuego = 2;
             document.getElementById("mensaje").innerText = "¡Ahora Cremas se ha perdido en las estrellas! Pista: Mira hacia el cielo...";
             document.getElementById("hotspots-cremas").style.display = "block";
@@ -118,14 +118,14 @@ function animarCremasBajandoYCorriendo() {
 
             let intervaloCorrer = setInterval(() => {
                 frame = (frame % 8) + 1;
-                cremasImg.src = `Images/Cremas_${frame}.png`;
+                cremasImg.src = `./Images/Cremas_${frame}.png`;
                 posX -= 10;
                 cremasImg.style.left = posX + "px";
 
                 if (posX <= destinoX) {
                     clearInterval(intervaloCorrer);
                     cremasImg.classList.remove("voltear");
-                    cremasImg.src = "Images/Cremas_4.png";
+                    cremasImg.src = "./Images/Cremas_4.png";
 
                     setTimeout(avanzarPasoDosConjuntoAnimado, 500);
                 }
@@ -151,9 +151,9 @@ function avanzarPasoDosConjuntoAnimado() {
         pasosContador++;
         dx += 3; mx += 3; cx += 3;
 
-        dulce.src = `Images/Dulce_${frame}.png`;
-        moka.src = `Images/Moka_${frame}.png`;
-        cremas.src = `Images/Cremas_${frame}.png`;
+        dulce.src = `./Images/Dulce_${frame}.png`;
+        moka.src = `./Images/Moka_${frame}.png`;
+        cremas.src = `./Images/Cremas_${frame}.png`;
 
         dulce.style.left = dx + "px";
         moka.style.left = mx + "px";
@@ -162,9 +162,9 @@ function avanzarPasoDosConjuntoAnimado() {
         if (pasosContador >= 22) {
             clearInterval(avanzaGrupo);
 
-            dulce.src = "Images/Dulce_1.png";
-            moka.src = "Images/Moka_4.png";
-            cremas.src = "Images/Cremas_4.png";
+            dulce.src = "./Images/Dulce_1.png";
+            moka.src = "./Images/Moka_4.png";
+            cremas.src = "./Images/Cremas_4.png";
 
             document.getElementById("mensaje").innerText = "¡Hermoso equipo! ¡2 pasos logrados! Ahora resuelve la Sopa de Letras...";
 
@@ -261,7 +261,7 @@ function animarXimenaCorriendo() {
 
     let intervaloXimena = setInterval(() => {
         frame = (frame % 8) + 1;
-        ximenaImg.src = `Images/Ximena_${frame}.png`;
+        ximenaImg.src = `./Images/Ximena_${frame}.png`;
 
         posX -= 10;
         ximenaImg.style.left = posX + "px";
@@ -269,7 +269,7 @@ function animarXimenaCorriendo() {
         if (posX <= destinoX) {
             clearInterval(intervaloXimena);
             ximenaImg.classList.remove("voltear");
-            ximenaImg.src = "Images/Ximena_1.png";
+            ximenaImg.src = "./Images/Ximena_1.png";
 
             document.getElementById("mensaje").innerText = "¡El equipo está completo! Ahora responde el reto del Paso 4... 🤔";
 
@@ -331,10 +331,10 @@ function avanzarPasoCuatroConjuntoAnimado() {
         pasosContador++;
         dx += 3; mx += 3; cx += 3; xx += 3;
 
-        dulce.src = `Images/Dulce_${frame}.png`;
-        moka.src = `Images/Moka_${frame}.png`;
-        cremas.src = `Images/Cremas_${frame}.png`;
-        ximena.src = `Images/Ximena_${frame}.png`;
+        dulce.src = `./Images/Dulce_${frame}.png`;
+        moka.src = `./Images/Moka_${frame}.png`;
+        cremas.src = `./Images/Cremas_${frame}.png`;
+        ximena.src = `./Images/Ximena_${frame}.png`;
 
         dulce.style.left = dx + "px";
         moka.style.left = mx + "px";
@@ -344,10 +344,10 @@ function avanzarPasoCuatroConjuntoAnimado() {
         if (pasosContador >= 20) {
             clearInterval(avanzaGrupo);
 
-            dulce.src = "Images/Dulce_1.png";
-            moka.src = "Images/Moka_4.png";
-            cremas.src = "Images/Cremas_4.png";
-            ximena.src = "Images/Ximena_1.png";
+            dulce.src = "./Images/Dulce_1.png";
+            moka.src = "./Images/Moka_4.png";
+            cremas.src = "./Images/Cremas_4.png";
+            ximena.src = "./Images/Ximena_1.png";
 
             document.getElementById("mensaje").innerText = "¡Excelente equipo! 4 pasos logrados. Siguiente pregunta...";
 
@@ -404,10 +404,10 @@ function avanzarPasoCincoConjuntoAnimado() {
         pasosContador++;
         dx += 3; mx += 3; cx += 3; xx += 3;
 
-        dulce.src = `Images/Dulce_${frame}.png`;
-        moka.src = `Images/Moka_${frame}.png`;
-        cremas.src = `Images/Cremas_${frame}.png`;
-        ximena.src = `Images/Ximena_${frame}.png`;
+        dulce.src = `./Images/Dulce_${frame}.png`;
+        moka.src = `./Images/Moka_${frame}.png`;
+        cremas.src = `./Images/Cremas_${frame}.png`;
+        ximena.src = `./Images/Ximena_${frame}.png`;
 
         dulce.style.left = dx + "px";
         moka.style.left = mx + "px";
@@ -417,10 +417,10 @@ function avanzarPasoCincoConjuntoAnimado() {
         if (pasosContador >= 20) {
             clearInterval(avanzaGrupo);
 
-            dulce.src = "Images/Dulce_1.png";
-            moka.src = "Images/Moka_4.png";
-            cremas.src = "Images/Cremas_4.png";
-            ximena.src = "Images/Ximena_1.png";
+            dulce.src = "./Images/Dulce_1.png";
+            moka.src = "./Images/Moka_4.png";
+            cremas.src = "./Images/Cremas_4.png";
+            ximena.src = "./Images/Ximena_1.png";
 
             document.getElementById("mensaje").innerText = "¡5 pasos logrados! ¡Vamos al gran final!";
 
@@ -450,10 +450,10 @@ function avanzarPasoSeisFinal() {
         pasosContador++;
         dx += 3; mx += 3; cx += 3; xx += 3;
 
-        dulce.src = `Images/Dulce_${frame}.png`;
-        moka.src = `Images/Moka_${frame}.png`;
-        cremas.src = `Images/Cremas_${frame}.png`;
-        ximena.src = `Images/Ximena_${frame}.png`;
+        dulce.src = `./Images/Dulce_${frame}.png`;
+        moka.src = `./Images/Moka_${frame}.png`;
+        cremas.src = `./Images/Cremas_${frame}.png`;
+        ximena.src = `./Images/Ximena_${frame}.png`;
 
         dulce.style.left = dx + "px";
         moka.style.left = mx + "px";
@@ -463,10 +463,10 @@ function avanzarPasoSeisFinal() {
         if (pasosContador >= 15) {
             clearInterval(avanzaUltimoPaso);
 
-            dulce.src = "Images/Dulce_1.png";
-            moka.src = "Images/Moka_4.png";
-            cremas.src = "Images/Cremas_4.png";
-            ximena.src = "Images/Ximena_1.png";
+            dulce.src = "./Images/Dulce_1.png";
+            moka.src = "./Images/Moka_4.png";
+            cremas.src = "./Images/Cremas_4.png";
+            ximena.src = "./Images/Ximena_1.png";
 
             document.getElementById("mensaje").innerText = "¡Meta alcanzada! ¡6 de 6 pasos logrados! ❤️";
 
