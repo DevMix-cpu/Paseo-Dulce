@@ -6,16 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Caminando Con Dulce</title>
     <style>
-        /* Fondo elegante y centrado para rellenar los espacios en blanco */
+        /* Fondo elegante pero manteniendo tu diseño natural */
         body {
             background: linear-gradient(135deg, #1a1528 0%, #0a0710 100%);
             margin: 0;
+            padding: 10px;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: auto;
-            touch-action: manipulation; /* Evita zoom por doble tap */
+            touch-action: manipulation;
             -webkit-user-select: none;
             user-select: none;
         }
@@ -31,7 +28,6 @@
             overflow: hidden;
             font-family: monospace;
             max-width: 100%;
-            /* Marco y sombra elegante que combina perfecto con el fondo */
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 183, 3, 0.2);
             border: 3px solid #ffb703;
         }
@@ -66,7 +62,7 @@
             transform: scaleX(-1);
         }
 
-        /* Sopa de Letras ultra compacta para que quepa sobradamente dentro de los 450px */
+        /* Sopa de Letras ultra compacta */
         #sopa-letras-container {
             display: none;
             position: absolute;
@@ -99,7 +95,6 @@
         .grid-sopa {
             display: grid;
             grid-template-columns: repeat(10, 24px);
-            /* Celdas más pequeñas y compactas */
             gap: 2px;
             margin: 4px auto;
             justify-content: center;
