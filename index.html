@@ -3,19 +3,37 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>El Paseo de Dulce</title>
     <style>
+        /* Fondo estético para llenar el espacio en blanco y evitar comportamientos extraños en cel */
+        body {
+            background: linear-gradient(135deg, #1a1528 0%, #0a0710 100%);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            touch-action: manipulation;
+            /* Evita que el doble tap haga zoom en celulares */
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
         #game-container {
             position: relative;
             width: 800px;
             height: 450px;
             background-image: url('Images/fondo_parque.png');
             background-size: cover;
-            margin: auto;
-            border-radius: 10px;
+            border-radius: 14px;
             overflow: hidden;
             font-family: monospace;
             max-width: 100%;
+            /* Marco brillante y sombras elegantes para que luzca profesional */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 183, 3, 0.25);
+            border: 3px solid #ffb703;
         }
 
         #mensaje {
@@ -24,11 +42,12 @@
             width: 100%;
             text-align: center;
             color: white;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.65);
             padding: 5px;
             font-size: 15px;
             font-weight: bold;
             z-index: 10;
+            letter-spacing: 0.5px;
         }
 
         .hotspot {
@@ -48,7 +67,7 @@
             transform: scaleX(-1);
         }
 
-        /* Sopa de Letras ultra compacta para que quepa sobradamente dentro de los 450px */
+        /* Sopa de Letras compacta */
         #sopa-letras-container {
             display: none;
             position: absolute;
@@ -81,7 +100,6 @@
         .grid-sopa {
             display: grid;
             grid-template-columns: repeat(10, 24px);
-            /* Celdas más pequeñas y compactas */
             gap: 2px;
             margin: 4px auto;
             justify-content: center;
