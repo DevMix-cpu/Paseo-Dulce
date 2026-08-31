@@ -4,51 +4,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>El Paseo de Dulce</title>
+    <title>Caminando Con Dulce</title>
     <style>
-        /* Fondo estético para llenar el espacio en blanco y evitar comportamientos extraños en cel */
+        /* Fondo estético y sin desbordamientos */
         body {
             background: linear-gradient(135deg, #1a1528 0%, #0a0710 100%);
             margin: 0;
-            min-height: 100vh;
+            width: 100vw;
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow-x: hidden;
+            overflow: hidden;
             touch-action: manipulation;
             -webkit-user-select: none;
             user-select: none;
         }
 
+        /* Contenedor responsivo que se adapta al alto y ancho real de cualquier celular */
         #game-container {
             position: relative;
-            width: 100%;
-            max-width: 800px;
-            /* Tamaño máximo en PC */
+            width: min(800px, 98vw);
+            height: min(450px, 55vw);
+            /* Se escala proporcionalmente según la pantalla */
             aspect-ratio: 800 / 450;
-            /* Mantiene la proporción perfecta en cualquier celular */
             background-image: url('Images/fondo_parque.png');
             background-size: cover;
             background-position: center;
-            border-radius: 14px;
+            margin: auto;
+            border-radius: 10px;
             overflow: hidden;
             font-family: monospace;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 183, 3, 0.25);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 20px rgba(255, 183, 3, 0.2);
             border: 3px solid #ffb703;
         }
 
         #mensaje {
             position: absolute;
-            top: 8px;
+            top: 2%;
             width: 100%;
             text-align: center;
             color: white;
             background: rgba(0, 0, 0, 0.65);
-            padding: 5px;
-            font-size: 15px;
+            padding: 4px;
+            font-size: clamp(11px, 1.8vw, 15px);
+            /* El texto se hace responsive automáticamente */
             font-weight: bold;
             z-index: 10;
-            letter-spacing: 0.5px;
         }
 
         .hotspot {
@@ -68,16 +70,16 @@
             transform: scaleX(-1);
         }
 
-        /* Sopa de Letras compacta */
+        /* Sopa de Letras compacta y adaptada */
         #sopa-letras-container {
             display: none;
             position: absolute;
-            top: 35px;
-            left: 215px;
-            width: 370px;
+            top: 10%;
+            left: 25%;
+            width: 50%;
             background: rgba(20, 20, 35, 0.96);
             border: 3px solid #ffb703;
-            padding: 8px 10px;
+            padding: 10px;
             border-radius: 10px;
             color: white;
             text-align: center;
@@ -88,31 +90,32 @@
         #sopa-letras-container h3 {
             margin: 0 0 2px 0;
             color: #ffb703;
-            font-size: 14px;
+            font-size: clamp(11px, 1.5vw, 14px);
             letter-spacing: 1px;
         }
 
         #sopa-letras-container p {
-            font-size: 11px;
-            margin: 2px 0 6px 0;
+            font-size: clamp(9px, 1.2vw, 11px);
+            margin: 2px 0 4px 0;
             color: #ccc;
         }
 
         .grid-sopa {
             display: grid;
-            grid-template-columns: repeat(10, 24px);
+            grid-template-columns: repeat(10, 7.5%);
+            /* Proporcional a la caja */
             gap: 2px;
             margin: 4px auto;
             justify-content: center;
         }
 
         .celda-sopa {
-            width: 24px;
-            height: 24px;
+            width: 100%;
+            aspect-ratio: 1 / 1;
             background: #2b2d42;
             border: 1px solid #4a4e69;
             border-radius: 3px;
-            font-size: 12px;
+            font-size: clamp(9px, 1.3vw, 12px);
             font-weight: bold;
             display: flex;
             align-items: center;
@@ -139,9 +142,9 @@
         }
 
         #palabras-lista {
-            font-size: 11px;
+            font-size: clamp(8px, 1.1vw, 11px);
             color: #e0d8c3;
-            margin-top: 5px;
+            margin-top: 4px;
             background: rgba(0, 0, 0, 0.4);
             padding: 4px;
             border-radius: 5px;
