@@ -5,199 +5,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Caminando Con Dulce</title>
-    <style>
-        /* Fondo elegante y contenedor que elimina barras de scroll innecesarias */
-        body {
-            background: linear-gradient(135deg, #1a1528 0%, #0a0710 100%);
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            touch-action: manipulation;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-
-        /* Envoltorio que centra el juego y maneja la escala en dispositivos móviles */
-        #app-wrapper {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #game-container {
-            position: relative;
-            width: 800px;
-            height: 450px;
-            background-image: url('Images/fondo_parque.png');
-            background-size: cover;
-            border-radius: 10px;
-            overflow: hidden;
-            font-family: monospace;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 183, 3, 0.2);
-            border: 3px solid #ffb703;
-            transform-origin: center center;
-        }
-
-        /* Si la pantalla es pequeña (celular), aplicamos un zoom automático del 85% o 90% */
-        @media (max-width: 850px),
-        (max-height: 500px) {
-            #game-container {
-                transform: scale(0.75);
-                /* Puedes probar cambiando a 0.8 o 0.9 según prefieras */
-            }
-        }
-
-        #mensaje {
-            position: absolute;
-            top: 8px;
-            width: 100%;
-            text-align: center;
-            color: white;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 5px;
-            font-size: 15px;
-            font-weight: bold;
-            z-index: 10;
-        }
-
-        .hotspot {
-            position: absolute;
-            cursor: pointer;
-        }
-
-        #dulce-personaje,
-        #moka-personaje,
-        #cremas-personaje,
-        #ximena-personaje {
-            position: absolute;
-            display: none;
-        }
-
-        .voltear {
-            transform: scaleX(-1);
-        }
-
-        /* Sopa de Letras ultra compacta */
-        #sopa-letras-container {
-            display: none;
-            position: absolute;
-            top: 35px;
-            left: 215px;
-            width: 370px;
-            background: rgba(20, 20, 35, 0.96);
-            border: 3px solid #ffb703;
-            padding: 8px 10px;
-            border-radius: 10px;
-            color: white;
-            text-align: center;
-            z-index: 20;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
-        }
-
-        #sopa-letras-container h3 {
-            margin: 0 0 2px 0;
-            color: #ffb703;
-            font-size: 14px;
-            letter-spacing: 1px;
-        }
-
-        #sopa-letras-container p {
-            font-size: 11px;
-            margin: 2px 0 6px 0;
-            color: #ccc;
-        }
-
-        .grid-sopa {
-            display: grid;
-            grid-template-columns: repeat(10, 24px);
-            gap: 2px;
-            margin: 4px auto;
-            justify-content: center;
-        }
-
-        .celda-sopa {
-            width: 24px;
-            height: 24px;
-            background: #2b2d42;
-            border: 1px solid #4a4e69;
-            border-radius: 3px;
-            font-size: 12px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            user-select: none;
-            transition: background 0.2s;
-        }
-
-        .celda-sopa:hover {
-            background: #4a4e69;
-        }
-
-        .celda-sopa.seleccionada {
-            background: #ffb703;
-            color: black;
-            border-color: #fb8500;
-        }
-
-        .celda-sopa.encontrada {
-            background: #2a9d8f;
-            color: white;
-            border-color: #264653;
-        }
-
-        #palabras-lista {
-            font-size: 11px;
-            color: #e0d8c3;
-            margin-top: 5px;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 4px;
-            border-radius: 5px;
-        }
-
-        .palabra-item {
-            display: inline-block;
-            margin: 0 3px;
-            font-weight: bold;
-            color: #ffb703;
-        }
-
-        .palabra-item.subrayada {
-            text-decoration: underline;
-            color: #2a9d8f;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
     <div id="app-wrapper">
         <div id="game-container">
-            <div id="mensaje">¡Moka se ha escondido! Pista: Revisa bien la lámpara del camino.</div>
+            <!-- Barra superior informativa -->
+            <div id="mensaje">Moka se fue a explorar sin permiso. Pista: Mira por la lámpara a ver si no se está electrocutando.</div>
 
+            <!-- Globo de pistas interactivo (Pasos 1 y 2) -->
+            <div id="globo-pista" class="globo-pista"></div>
+
+            <!-- Hotspots Paso 1 (Moka) -->
             <div class="hotspot" style="top: 210px; left: 215px; width: 60px; height: 90px;"
-                onclick="encontrarPistaMoka(1)"></div>
+                onclick="encontrarPistaMoka(1, event)"></div>
             <div class="hotspot" style="top: 40px; left: 10px; width: 120px; height: 320px;"
-                onclick="encontrarPistaMoka(2)"></div>
+                onclick="encontrarPistaMoka(2, event)"></div>
             <div class="hotspot" style="top: 250px; left: 480px; width: 170px; height: 110px;"
-                onclick="encontrarPistaMoka(3)"></div>
+                onclick="encontrarPistaMoka(3, event)"></div>
 
+            <!-- Hotspots Paso 2 (Cremas) -->
             <div id="hotspots-cremas" style="display: none;">
                 <div class="hotspot" style="top: 10px; left: 300px; width: 260px; height: 60px;"
-                    onclick="encontrarPistaCremas(1)"></div>
+                    onclick="encontrarPistaCremas(1, event)"></div>
                 <div class="hotspot" style="top: 220px; left: 700px; width: 60px; height: 60px;"
-                    onclick="encontrarPistaCremas(2)"></div>
+                    onclick="encontrarPistaCremas(2, event)"></div>
                 <div class="hotspot" style="top: 110px; left: 600px; width: 120px; height: 80px;"
-                    onclick="encontrarPistaCremas(3)"></div>
+                    onclick="encontrarPistaCremas(3, event)"></div>
             </div>
 
+            <!-- Personajes en el parque -->
             <img id="moka-personaje" src="Images/Moka_4.png" style="top: 310px; left: 580px; width: 60px; z-index: 1;"
                 alt="Moka">
             <img id="cremas-personaje" src="Images/Cremas_4.png"
@@ -205,25 +44,54 @@
             <img id="dulce-personaje" src="Images/Dulce_1.png" style="top: 260px; left: 150px; width: 90px; z-index: 2;"
                 alt="Dulce">
             <img id="ximena-personaje" src="Images/Ximena_1.png"
-                style="top: 245px; left: 580px; height: 150px;z-index: 3;" alt="Ximena">
+                style="top: 245px; left: 580px; height: 150px; z-index: 3;" alt="Ximena">
+            <img id="lucifer-personaje" src="Images/Lucifer_1.png"
+                style="top: 348px; left: -100px; width: 62px; z-index: 4; display: none;" alt="Lucifer">
 
+            <!-- Modal Paso 3: Sopa de Letras -->
             <div id="sopa-letras-container">
                 <h3>✨ SOPA DE LETRAS ✨</h3>
-                <p>Encuentra las 5 palabras ocultas haciendo clic en sus letras:</p>
+                <p>Encuentra las 5 palabras ocultas (horizontal, vertical o diagonal):</p>
                 <div class="grid-sopa" id="grid-sopa"></div>
                 <div id="palabras-lista">
-                    <strong>Busca:</strong>
+                    <span style="font-weight: bold; color: #fff; margin-right: 2px;">Palabras:</span>
                     <span class="palabra-item" id="p-XIMENA">XIMENA</span>
                     <span class="palabra-item" id="p-DULCE">DULCE</span>
                     <span class="palabra-item" id="p-CREMAS">CREMAS</span>
                     <span class="palabra-item" id="p-MOKA">MOKA</span>
                     <span class="palabra-item" id="p-LUCIFER">LUCIFER</span>
                 </div>
+                <div id="sopa-acciones">
+                    <span id="sopa-progreso" style="color: #72efdd;">Encontradas: 0 / 5</span>
+                    <div>
+                        <button class="btn-sopa btn-sopa-omitir" onclick="omitirSopaDeLetras()" title="Botón temporal de desarrollo">⚡ Omitir</button>
+                        <button class="btn-sopa" onclick="deseleccionarTodoSopa()">🧹 Limpiar</button>
+                    </div>
+                </div>
             </div>
+
+            <!-- Modal Pasos 4 y 5: Quiz -->
+            <div id="quiz-modal" class="modal-juego" style="display: none; top: 70px; left: 200px; width: 400px;"></div>
+
+            <!-- Modal Paso 6: Minijuego de Ritmo ("A tu ritmo") -->
+            <div id="ritmo-modal"></div>
+
+            <!-- Capa Paso 7: Minijuego de Constelación ("Guía las Estrellas") -->
+            <div id="constelacion-container"></div>
+
+            <!-- Capa Paso 8: Minijuego de Sendero Iluminado -->
+            <div id="sendero-container"></div>
+
+            <!-- Modal Paso 10: Carta Final -->
+            <div id="carta-final-modal" class="modal-juego"></div>
         </div>
+
+        <!-- Aviso para rotar pantalla en móviles verticales -->
+        <div id="orientacion-aviso">🔄 Gira tu pantalla para una mejor experiencia</div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Script principal del juego -->
+    <script src="js/script.js"></script>
 </body>
 
 </html>
