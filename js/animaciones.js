@@ -383,10 +383,10 @@ function avanzarPasoSieteConjuntoAnimado() {
                 lucifer.style.top = "348px";
             }
 
-            document.getElementById("mensaje").innerText = "7 de 10 pasos completados... pero falta lo bueno.";
+            document.getElementById("mensaje").innerText = "7 pasos listos (7/10). Ahora prueba de pulso en el sendero...";
 
-            // Mostrar Carta Final provisional en Paso 7
-            setTimeout(mostrarCartaFinal, 1500);
+            // Iniciar Paso 8 (Sendero Iluminado)
+            setTimeout(iniciarMinijuegoSendero, 1800);
         }
     }, 90);
 }
@@ -408,6 +408,7 @@ function avanzarPasoOchoConjuntoAnimado() {
     if (lucifer) {
         lucifer.style.top = "348px";
         lucifer.style.width = "62px";
+        lucifer.style.zIndex = "4";
     }
 
     let frame = 1;
@@ -445,15 +446,15 @@ function avanzarPasoOchoConjuntoAnimado() {
                 lucifer.style.top = "348px";
             }
 
-            document.getElementById("mensaje").innerText = "8 de 10 pasos completados... pero falta lo bueno.";
+            document.getElementById("mensaje").innerText = "8 pasos listos (8/10). Hora de cosechar energía para el tramo final 🌾✨";
 
-            // Mostrar Carta Final provisional en Paso 8
-            setTimeout(mostrarCartaFinal, 1500);
+            // Iniciar Paso 9 (Cosechando Pasos)
+            setTimeout(iniciarMinijuegoCosecha, 1600);
         }
     }, 90);
 }
 
-// Avance conjunto tras completar Paso 9 (Despejar la Niebla)
+// Avance conjunto tras completar Paso 9 (Cosechando Pasos)
 function avanzarPasoNueveConjuntoAnimado() {
     const dulce = document.getElementById("dulce-personaje");
     const moka = document.getElementById("moka-personaje");
@@ -470,6 +471,7 @@ function avanzarPasoNueveConjuntoAnimado() {
     if (lucifer) {
         lucifer.style.top = "348px";
         lucifer.style.width = "62px";
+        lucifer.style.zIndex = "4";
     }
 
     let frame = 1;
@@ -490,7 +492,10 @@ function avanzarPasoNueveConjuntoAnimado() {
         moka.style.left = mx + "px";
         cremas.style.left = cx + "px";
         ximena.style.left = xx + "px";
-        if (lucifer) lucifer.style.left = lx + "px";
+        if (lucifer) {
+            lucifer.style.left = lx + "px";
+            lucifer.style.top = "348px";
+        }
 
         if (pasosContador >= 15) {
             clearInterval(avanzaPasoNueve);
@@ -499,12 +504,15 @@ function avanzarPasoNueveConjuntoAnimado() {
             moka.src = "./Images/Moka_4.png";
             cremas.src = "./Images/Cremas_4.png";
             ximena.src = "./Images/Ximena_1.png";
-            if (lucifer) lucifer.src = "./Images/Lucifer_1.png";
+            if (lucifer) {
+                lucifer.src = "./Images/Lucifer_1.png";
+                lucifer.style.top = "348px";
+            }
 
-            document.getElementById("mensaje").innerText = "9 de 10 pasos completados... pero falta lo bueno.";
+            document.getElementById("mensaje").innerText = "El grupo se detiene... Una densa niebla cubre el camino adelante 🌫️";
 
-            // Mostrar Carta Final y aviso de paso pendiente en el Paso 9
-            setTimeout(mostrarCartaFinal, 1500);
+            // Aparece la capa de niebla inactiva que bloquea el Paso 10
+            setTimeout(mostrarNieblaInactivaYPasoDiez, 1400);
         }
     }, 90);
 }

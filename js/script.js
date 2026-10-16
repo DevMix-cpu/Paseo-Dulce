@@ -645,9 +645,9 @@ function avanzarPasoSieteConjuntoAnimado() {
       }
 
       document.getElementById("mensaje").innerText =
-        "7 de 10 pasos completados... pero falta lo bueno.";
+        "7 pasos listos (7/10). Ahora prueba de pulso en el sendero...";
 
-      setTimeout(mostrarCartaFinal, 1500);
+      setTimeout(iniciarMinijuegoSendero, 1800);
     }
   }, 90);
 }
@@ -1539,256 +1539,230 @@ function avanzarPasoOchoConjuntoAnimado() {
       }
 
       document.getElementById("mensaje").innerText =
-        "8 de 10 pasos completados... pero falta lo bueno.";
+        "8 pasos listos (8/10). Hora de cosechar energía para el tramo final 🌾✨";
 
-      setTimeout(mostrarCartaFinal, 1500);
+      setTimeout(iniciarMinijuegoCosecha, 1600);
     }
   }, 90);
 }
 
 // ==========================================================================
-// PASO 9: MINIJUEGO "DESPEJAR LA NIEBLA" (SCRATCH / ERASER EFFECT)
+// PASO 9: MINIJUEGO "COSECHANDO PASOS" (RECOLECCIÓN DE ENERGÍA)
 // ==========================================================================
-let nieblaCompletada = false;
-let arrastrandoBorradorNiebla = false;
-let ultimoPuntoBorrador = null;
-let temporizadorMuestreoNiebla = null;
-let porcentajeNieblaDespejado = 0;
+let energiaCosecha = 0;
+const OBJETIVO_ENERGIA_COSECHA = 100;
+let cosechaActiva = false;
+let animacionCosechaId = null;
+let temporizadorSpawnCosecha = null;
+let elementosCosecha = [];
+let canastaCosechaX = 400;
 
-function iniciarMinijuegoNiebla() {
-  nieblaCompletada = false;
-  arrastrandoBorradorNiebla = false;
-  ultimoPuntoBorrador = null;
-  porcentajeNieblaDespejado = 0;
+const TIPOS_ELEMENTOS_COSECHA = [
+  { icono: "🐾", nombre: "huellita", puntos: 10 },
+  { icono: "💖", nombre: "corazon", puntos: 10 },
+  { icono: "⭐", nombre: "estrella", puntos: 10 },
+  { icono: "🍃", nombre: "hojita", puntos: 10 },
+];
+
+function iniciarMinijuegoCosecha() {
+  energiaCosecha = 0;
+  cosechaActiva = true;
+  elementosCosecha = [];
+  canastaCosechaX = 400;
 
   document.getElementById("mensaje").innerText =
-    "Paso 9/10: Despeja la niebla tallando la pantalla antes de que nos perdamos 🌫️";
+    "Paso 9/10: Cosechando Pasos. Mueve la canasta y atrapa la energía flotante 🧺✨";
 
-  const gameContainer = document.getElementById("game-container");
-  if (!gameContainer) return;
-
-  const canvasViejo = document.getElementById("canvas-niebla");
-  if (canvasViejo) canvasViejo.remove();
-  const bannerViejo = document.getElementById("niebla-banner-progreso");
-  if (bannerViejo) bannerViejo.remove();
-
-  const canvas = document.createElement("canvas");
-  canvas.id = "canvas-niebla";
-  canvas.width = 800;
-  canvas.height = 450;
-  gameContainer.appendChild(canvas);
-
-  const banner = document.createElement("div");
-  banner.id = "niebla-banner-progreso";
-  banner.innerText = "🌫️ Despejando el camino: 0% / 60%";
-  gameContainer.appendChild(banner);
-
-  const ctx = canvas.getContext("2d", { willReadFrequently: true });
-  pintarCapaNiebla(ctx, canvas.width, canvas.height);
-
-  configurarEventosBorradorNiebla(canvas, ctx);
-}
-
-function pintarCapaNiebla(ctx, width, height) {
-  ctx.save();
-
-  const gradFondo = ctx.createRadialGradient(
-    width / 2,
-    height / 2,
-    80,
-    width / 2,
-    height / 2,
-    450,
-  );
-  gradFondo.addColorStop(0, "rgba(22, 18, 38, 0.92)");
-  gradFondo.addColorStop(0.6, "rgba(16, 13, 29, 0.95)");
-  gradFondo.addColorStop(1, "rgba(10, 8, 20, 0.98)");
-
-  ctx.fillStyle = gradFondo;
-  ctx.fillRect(0, 0, width, height);
-
-  for (let i = 0; i < 18; i++) {
-    const cx = Math.random() * width;
-    const cy = Math.random() * height;
-    const rad = 60 + Math.random() * 90;
-
-    const gradNube = ctx.createRadialGradient(cx, cy, 10, cx, cy, rad);
-    gradNube.addColorStop(0, "rgba(140, 150, 190, 0.18)");
-    gradNube.addColorStop(0.7, "rgba(80, 85, 120, 0.08)");
-    gradNube.addColorStop(1, "rgba(0, 0, 0, 0)");
-
-    ctx.fillStyle = gradNube;
-    ctx.beginPath();
-    ctx.arc(cx, cy, rad, 0, Math.PI * 2);
-    ctx.fill();
+  let container = document.getElementById("cosecha-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "cosecha-container";
+    document.getElementById("game-container").appendChild(container);
   }
 
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
+  container.innerHTML = `
+    <div id="cosecha-overlay">
+      <div id="cosecha-hud">
+        <div class="cosecha-titulo">✨ COSECHANDO PASOS (9/10) ✨</div>
+        <div class="cosecha-instruccion">Mueve la canasta con el cursor o el dedo para atrapar energía 🧺</div>
+        <div id="cosecha-barra-contenedor">
+          <div id="cosecha-barra-progreso" style="width: 0%;"></div>
+          <span id="cosecha-progreso-texto">⚡ Energía: 0% / 100%</span>
+        </div>
+      </div>
+      <div id="cosecha-items-area"></div>
+      <div id="cosecha-canasta" style="left: 400px;">
+        <div class="canasta-icono">🧺</div>
+      </div>
+      <div id="cosecha-banner-exito" style="display: none;">
+        ✨ ¡100% ENERGÍA RECOLECTADA! ✨
+      </div>
+    </div>
+  `;
+  container.style.display = "block";
 
-  ctx.font = "bold 20px monospace";
-  ctx.fillStyle = "#ffb703";
-  ctx.shadowColor = "rgba(255, 183, 3, 0.8)";
-  ctx.shadowBlur = 10;
-  ctx.fillText(
-    "🌫️ ¡Una densa niebla cubre el camino! 🌫️",
-    width / 2,
-    height / 2 - 25,
-  );
-
-  ctx.font = "14px monospace";
-  ctx.fillStyle = "#f0ebd8";
-  ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
-  ctx.shadowBlur = 6;
-  ctx.fillText(
-    "Desliza tu dedo o cursor para despejar la bruma antes de chocar...",
-    width / 2,
-    height / 2 + 15,
-  );
-
-  ctx.font = "12px monospace";
-  ctx.fillStyle = "#72efdd";
-  ctx.fillText("✨ 9 de 10 pasos en juego ✨", width / 2, height / 2 + 45);
-
-  ctx.restore();
-}
-
-function configurarEventosBorradorNiebla(canvas, ctx) {
-  function obtenerCoords(e) {
-    const rect = canvas.getBoundingClientRect();
+  function actualizarPosicionCanasta(e) {
+    if (!cosechaActiva) return;
+    const gameCont = document.getElementById("game-container");
+    if (!gameCont) return;
+    const rect = gameCont.getBoundingClientRect();
     const escala = rect.width / 800;
-    return {
-      x: (e.clientX - rect.left) / escala,
-      y: (e.clientY - rect.top) / escala,
-    };
-  }
+    let x = (e.clientX - rect.left) / escala;
+    x = Math.max(50, Math.min(750, x));
+    canastaCosechaX = x;
 
-  function borrarEnPunto(p1, p2) {
-    ctx.save();
-    ctx.globalCompositeOperation = "destination-out";
-    ctx.lineWidth = 80;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-
-    ctx.beginPath();
-    if (p1 && p2) {
-      ctx.moveTo(p1.x, p1.y);
-      ctx.lineTo(p2.x, p2.y);
-    } else if (p2) {
-      ctx.arc(p2.x, p2.y, 40, 0, Math.PI * 2);
+    const canasta = document.getElementById("cosecha-canasta");
+    if (canasta) {
+      canasta.style.left = `${x}px`;
     }
-    ctx.stroke();
-    ctx.fill();
-    ctx.restore();
   }
 
-  canvas.onpointerdown = (e) => {
-    if (nieblaCompletada) return;
-    arrastrandoBorradorNiebla = true;
-    canvas.setPointerCapture(e.pointerId);
-
-    const pos = obtenerCoords(e);
-    ultimoPuntoBorrador = pos;
-    borrarEnPunto(null, pos);
-    solicitarMuestreoProgresoNiebla(ctx, canvas);
+  container.onpointerdown = (e) => {
+    actualizarPosicionCanasta(e);
+  };
+  container.onpointermove = (e) => {
+    actualizarPosicionCanasta(e);
   };
 
-  canvas.onpointermove = (e) => {
-    if (!arrastrandoBorradorNiebla || nieblaCompletada) return;
-
-    const pos = obtenerCoords(e);
-    borrarEnPunto(ultimoPuntoBorrador, pos);
-    ultimoPuntoBorrador = pos;
-
-    solicitarMuestreoProgresoNiebla(ctx, canvas);
-  };
-
-  canvas.onpointerup = (e) => {
-    arrastrandoBorradorNiebla = false;
-    ultimoPuntoBorrador = null;
-    try {
-      canvas.releasePointerCapture(e.pointerId);
-    } catch (err) {}
-  };
-
-  canvas.onpointercancel = () => {
-    arrastrandoBorradorNiebla = false;
-    ultimoPuntoBorrador = null;
-  };
+  iniciarBucleCosecha();
+  if (temporizadorSpawnCosecha) clearInterval(temporizadorSpawnCosecha);
+  temporizadorSpawnCosecha = setInterval(() => {
+    if (!cosechaActiva) return;
+    spawnElementoCosecha();
+  }, 620);
 }
 
-function solicitarMuestreoProgresoNiebla(ctx, canvas) {
-  if (temporizadorMuestreoNiebla) return;
+function spawnElementoCosecha() {
+  const itemsArea = document.getElementById("cosecha-items-area");
+  if (!itemsArea || !cosechaActiva) return;
 
-  temporizadorMuestreoNiebla = setTimeout(() => {
-    temporizadorMuestreoNiebla = null;
-    calcularProgresoNiebla(ctx, canvas);
-  }, 180);
+  const tipo =
+    TIPOS_ELEMENTOS_COSECHA[
+      Math.floor(Math.random() * TIPOS_ELEMENTOS_COSECHA.length)
+    ];
+  const x = 70 + Math.random() * 660;
+  const y = -25;
+  const velocidadY = 2.4 + Math.random() * 1.3;
+  const swayAmplitud = 0.8 + Math.random() * 1.2;
+  const swayFase = Math.random() * Math.PI * 2;
+
+  const div = document.createElement("div");
+  div.className = `item-cosecha item-${tipo.nombre}`;
+  div.innerText = tipo.icono;
+  div.style.left = `${x}px`;
+  div.style.top = `${y}px`;
+  itemsArea.appendChild(div);
+
+  elementosCosecha.push({
+    el: div,
+    x: x,
+    baseX: x,
+    y: y,
+    velocidadY: velocidadY,
+    swayAmplitud: swayAmplitud,
+    swayFase: swayFase,
+    puntos: tipo.puntos,
+    tiempo: 0,
+  });
 }
 
-function calcularProgresoNiebla(ctx, canvas) {
-  if (nieblaCompletada) return;
+function iniciarBucleCosecha() {
+  if (animacionCosechaId) cancelAnimationFrame(animacionCosechaId);
 
-  try {
-    const stepX = 25;
-    const stepY = 25;
-    let puntosTotales = 0;
-    let puntosBorrados = 0;
+  function bucle() {
+    if (!cosechaActiva) return;
 
-    const imgData = ctx.getImageData(0, 0, 800, 450).data;
+    for (let i = elementosCosecha.length - 1; i >= 0; i--) {
+      const item = elementosCosecha[i];
+      item.tiempo += 0.04;
+      item.y += item.velocidadY;
+      item.x =
+        item.baseX +
+        Math.sin(item.tiempo + item.swayFase) * (item.swayAmplitud * 18);
 
-    for (let y = 30; y < 420; y += stepY) {
-      for (let x = 40; x < 760; x += stepX) {
-        puntosTotales++;
-        const index = (y * 800 + x) * 4;
-        const alpha = imgData[index + 3];
-        if (alpha < 100) {
-          puntosBorrados++;
+      item.el.style.top = `${item.y}px`;
+      item.el.style.left = `${item.x}px`;
+
+      // Detección de colisión con la canasta
+      const distX = Math.abs(item.x - canastaCosechaX);
+      const enAlturaCanasta = item.y >= 365 && item.y <= 415;
+
+      if (enAlturaCanasta && distX <= 48) {
+        energiaCosecha = Math.min(
+          OBJETIVO_ENERGIA_COSECHA,
+          energiaCosecha + item.puntos,
+        );
+
+        crearPopCosecha(item.x, item.y, `+${item.puntos}% ⚡`);
+        animarReboteCanasta();
+
+        const barra = document.getElementById("cosecha-barra-progreso");
+        const texto = document.getElementById("cosecha-progreso-texto");
+        if (barra) barra.style.width = `${energiaCosecha}%`;
+        if (texto) texto.innerText = `⚡ Energía: ${energiaCosecha}% / 100%`;
+
+        item.el.remove();
+        elementosCosecha.splice(i, 1);
+
+        if (energiaCosecha >= OBJETIVO_ENERGIA_COSECHA) {
+          finalizarMinijuegoCosecha();
+          return;
         }
+        continue;
+      }
+
+      if (item.y > 450) {
+        item.el.remove();
+        elementosCosecha.splice(i, 1);
       }
     }
 
-    const porcentaje = Math.min(
-      Math.round((puntosBorrados / puntosTotales) * 100),
-      100,
-    );
-    porcentajeNieblaDespejado = porcentaje;
-
-    const banner = document.getElementById("niebla-banner-progreso");
-    if (banner) {
-      banner.innerText = `🌫️ Despejando el camino: ${porcentaje}% / 60%`;
-    }
-
-    if (porcentaje >= 58) {
-      finalizarMinijuegoNiebla(canvas);
-    }
-  } catch (e) {
-    console.warn("Error en muestreo de niebla:", e);
+    animacionCosechaId = requestAnimationFrame(bucle);
   }
+
+  animacionCosechaId = requestAnimationFrame(bucle);
 }
 
-function finalizarMinijuegoNiebla(canvas) {
-  if (nieblaCompletada) return;
-  nieblaCompletada = true;
+function animarReboteCanasta() {
+  const canasta = document.getElementById("cosecha-canasta");
+  if (!canasta) return;
+  canasta.classList.remove("recolectado");
+  void canasta.offsetWidth;
+  canasta.classList.add("recolectado");
+}
 
-  const banner = document.getElementById("niebla-banner-progreso");
-  if (banner) {
-    banner.style.borderColor = "#ffb703";
-    banner.style.color = "#ffb703";
-    banner.innerText = "✨ ¡Camino despejado! (9/10) ✨";
-  }
+function crearPopCosecha(x, y, texto) {
+  const container = document.getElementById("cosecha-overlay");
+  if (!container) return;
+  const pop = document.createElement("div");
+  pop.className = "pop-cosecha";
+  pop.innerText = texto;
+  pop.style.left = `${x}px`;
+  pop.style.top = `${y}px`;
+  container.appendChild(pop);
+  setTimeout(() => pop.remove(), 650);
+}
+
+function finalizarMinijuegoCosecha() {
+  cosechaActiva = false;
+  if (animacionCosechaId) cancelAnimationFrame(animacionCosechaId);
+  if (temporizadorSpawnCosecha) clearInterval(temporizadorSpawnCosecha);
+
+  elementosCosecha.forEach((item) => item.el.remove());
+  elementosCosecha = [];
+
+  const banner = document.getElementById("cosecha-banner-exito");
+  if (banner) banner.style.display = "block";
 
   document.getElementById("mensaje").innerText =
-    "¡Niebla despejada! 9 de 10 pasos listos. Ni el clima nos frena.";
-
-  canvas.style.opacity = "0";
+    "¡100% de energía cosechada! Paso 9 completado (9/10) 🎉";
 
   setTimeout(() => {
-    if (canvas && canvas.parentNode) canvas.remove();
-    if (banner && banner.parentNode) banner.remove();
+    const container = document.getElementById("cosecha-container");
+    if (container) container.style.display = "none";
 
     avanzarPasoNueveConjuntoAnimado();
-  }, 850);
+  }, 1800);
 }
 
 function avanzarPasoNueveConjuntoAnimado() {
@@ -1807,6 +1781,7 @@ function avanzarPasoNueveConjuntoAnimado() {
   if (lucifer) {
     lucifer.style.top = "348px";
     lucifer.style.width = "62px";
+    lucifer.style.zIndex = "4";
   }
 
   let frame = 1;
@@ -1849,15 +1824,135 @@ function avanzarPasoNueveConjuntoAnimado() {
       }
 
       document.getElementById("mensaje").innerText =
-        "9 de 10 pasos completados... pero falta lo bueno.";
+        "El grupo se detiene... Una densa niebla cubre el camino adelante 🌫️";
 
-      setTimeout(mostrarCartaFinal, 1500);
+      setTimeout(mostrarNieblaInactivaYPasoDiez, 1400);
     }
   }, 90);
 }
 
 // ==========================================================================
-// CARTA FINAL Y MENSAJE DE RECUPERACIÓN (PASO 9)
+// PASO 10: NIEBLA INACTIVA (PASO BLOQUEADO) Y MENSAJE ESPECIAL
+// ==========================================================================
+function mostrarNieblaInactivaYPasoDiez() {
+  const gameContainer = document.getElementById("game-container");
+  if (!gameContainer) return;
+
+  let canvas = document.getElementById("canvas-niebla");
+  if (!canvas) {
+    canvas = document.createElement("canvas");
+    canvas.id = "canvas-niebla";
+    canvas.width = 800;
+    canvas.height = 450;
+    gameContainer.appendChild(canvas);
+  }
+
+  // Capa completamente estática e inactiva (sin eventos de borrado)
+  canvas.style.pointerEvents = "none";
+  canvas.style.opacity = "0";
+  canvas.style.display = "block";
+
+  const ctx = canvas.getContext("2d");
+  pintarCapaNieblaInactiva(ctx, canvas.width, canvas.height);
+
+  setTimeout(() => {
+    canvas.style.opacity = "0.94";
+  }, 50);
+
+  setTimeout(mostrarModalMensajeEspecial, 1600);
+}
+
+function pintarCapaNieblaInactiva(ctx, width, height) {
+  ctx.save();
+
+  const gradFondo = ctx.createRadialGradient(
+    width / 2,
+    height / 2,
+    70,
+    width / 2,
+    height / 2,
+    440,
+  );
+  gradFondo.addColorStop(0, "rgba(22, 17, 36, 0.90)");
+  gradFondo.addColorStop(0.65, "rgba(16, 12, 28, 0.94)");
+  gradFondo.addColorStop(1, "rgba(10, 7, 20, 0.98)");
+
+  ctx.fillStyle = gradFondo;
+  ctx.fillRect(0, 0, width, height);
+
+  for (let i = 0; i < 22; i++) {
+    const cx = Math.random() * width;
+    const cy = Math.random() * height;
+    const rad = 70 + Math.random() * 110;
+
+    const gradNube = ctx.createRadialGradient(cx, cy, 10, cx, cy, rad);
+    gradNube.addColorStop(0, "rgba(140, 150, 195, 0.16)");
+    gradNube.addColorStop(0.7, "rgba(80, 85, 125, 0.07)");
+    gradNube.addColorStop(1, "rgba(0, 0, 0, 0)");
+
+    ctx.fillStyle = gradNube;
+    ctx.beginPath();
+    ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  ctx.font = "bold 18px monospace";
+  ctx.fillStyle = "#ffb703";
+  ctx.shadowColor = "rgba(255, 183, 3, 0.7)";
+  ctx.shadowBlur = 12;
+  ctx.fillText("🌫️ PASO 10: BLOQUEADO 🌫️", width / 2, 80);
+
+  ctx.font = "12px monospace";
+  ctx.fillStyle = "#72efdd";
+  ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+  ctx.shadowBlur = 6;
+  ctx.fillText("El camino continúa en la vida real...", width / 2, 108);
+
+  ctx.restore();
+}
+
+function mostrarModalMensajeEspecial() {
+  let modal = document.getElementById("modal-mensaje-especial");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "modal-mensaje-especial";
+    modal.className = "modal-juego";
+    document.getElementById("game-container").appendChild(modal);
+  }
+
+  modal.innerHTML = `
+    <div class="icono-especial-candado">🔒 ✨ 👣</div>
+    <h3 style="color:#ffb703; margin:0 0 6px 0; font-size:17px; letter-spacing:1.5px;">EL SIGUIENTE PASO</h3>
+    <div style="background:rgba(114,239,221,0.12); border:1px solid #72efdd; color:#72efdd; padding:4px 12px; border-radius:12px; font-size:11.5px; font-weight:bold; margin-bottom:12px; display:inline-block;">
+      Paso 10: Reservado para nosotros
+    </div>
+    <div class="caja-cita-especial">
+      <p class="frase-especial">
+        “Ya te estoy viendo y tú aún no lo sabes... Avísame cuando estés lista para dar el siguiente paso y yo caminaré contigo.”
+      </p>
+    </div>
+    <button class="btn-sopa" onclick="cerrarMensajeEspecialYAbrirCarta()" style="background:#ffb703; color:#110d1a; font-weight:bold; font-size:13px; padding:10px 22px; border:none; border-radius:8px; cursor:pointer; box-shadow:0 4px 15px rgba(255,183,3,0.4);">
+      Caminar juntos 💛
+    </button>
+  `;
+
+  modal.style.display = "block";
+}
+
+function cerrarMensajeEspecialYAbrirCarta() {
+  const modalEspecial = document.getElementById("modal-mensaje-especial");
+  if (modalEspecial) {
+    modalEspecial.style.display = "none";
+  }
+
+  mostrarCartaFinal();
+}
+
+// ==========================================================================
+// CARTA FINAL Y MENSAJE DE RECUPERACIÓN (PASO 10 EN LA VIDA REAL)
 // ==========================================================================
 function mostrarCartaFinal() {
   let modalFinal = document.getElementById("carta-final-modal");
@@ -1868,20 +1963,20 @@ function mostrarCartaFinal() {
   }
 
   modalFinal.innerHTML = `
-    <h2 style="color:#ffb703; margin-top:0; font-size:18px; letter-spacing:1px;">✨ 7 DE 10 PASOS LOGRADOS ✨</h2>
+    <h2 style="color:#ffb703; margin-top:0; font-size:18px; letter-spacing:1px;">✨ 9 DE 10 PASOS LOGRADOS ✨</h2>
 
-    <div style="background:rgba(255,183,3,0.15); border:1px solid #ffb703; color:#ffb703; padding:5px 12px; border-radius:8px; font-weight:bold; font-size:12px; margin:6px auto 10px auto; display:inline-block;">
-        El paso 10 nos toca a nosotros
+    <div style="background:rgba(255,183,3,0.15); border:1px solid #ffb703; color:#ffb703; padding:5px 14px; border-radius:8px; font-weight:bold; font-size:12px; margin:4px auto 10px auto; display:inline-block;">
+        Paso 10: Reservado para nosotros dos en la vida real 🔒
     </div>
 
-    <p style="font-size:13px; line-height:1.6; color:#f0ebd8; margin:10px 0; text-align:center;">
-        Ya tienes aquí a Moka, a Cremas y a tu hermana echándote porras. Vas en 7 pasos y no hay prisa por los que faltan; no me desespero ni me pesa esperarte, vamos a tu ritmo y con calma.<br><br>
-        Medio locos los dos, pero aquí seguimos firmes. El paso 10 lo caminamos juntos.<br><br>
-        Te quiero mucho ❤️
+    <p style="font-size:13px; line-height:1.65; color:#f0ebd8; margin:10px 0; text-align:justify;">
+        Sé que no soy de discursos ni de ponerme sentimental, pero quiero ser muy claro con esto: lo que estás haciendo en cada terapia tiene todo mi respeto. Ver el esfuerzo que le metes todos los días para ponerte de pie y avanzar no es poca cosa, y admiro mucho tu aguante.<br><br>
+        No te presiones ni te desesperes por el tiempo; no hay ninguna prisa. Yo no me desespero ni me pesa esperarte, me importa acompañarte a tu propio ritmo. Medio locos los dos, con días pesados o con quejas válidas, pero aquí seguimos firmes y juntos.<br><br>
+        Llegaste al paso 9 en el juego, y ese último paso cubierto de niebla lo dejamos así a propósito: el décimo paso lo tenemos guardado para darlo juntos en la vida real, caminando de la mano. Te quiero muchísimo.
     </p>
 
-    <button onclick="location.reload()" style="margin-top:8px; padding:8px 16px; background:#ffb703; color:#110d1a; font-weight:bold; border:none; border-radius:8px; cursor:pointer; font-family:monospace; font-size:12.5px; box-shadow: 0 4px 15px rgba(255,183,3,0.4);">Volver a jugar 🐾</button>
-`;
+    <button onclick="location.reload()" style="margin-top:8px; padding:9px 18px; background:#ffb703; color:#110d1a; font-weight:bold; border:none; border-radius:8px; cursor:pointer; font-family:monospace; font-size:12.5px; box-shadow: 0 4px 15px rgba(255,183,3,0.4);">Volver a jugar 🐾</button>
+  `;
   modalFinal.style.display = "block";
 }
 
